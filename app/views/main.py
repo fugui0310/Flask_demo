@@ -1,10 +1,4 @@
-from flask import Flask, render_template, request,Blueprint
-
-from app.loginform import LoginForm
-from app.sqlpool import func
-
-
-
+from flask import render_template, Blueprint
 
 main = Blueprint('main', __name__)
 

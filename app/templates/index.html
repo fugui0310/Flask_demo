@@ -1,12 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'layout.html' %}
 
-<h1>主页</h1>
+{% block title %}首页{% endblock %}
 
-</body>
-</html>
+{% block body %}
+<table>
+    <h1>欢迎登录：{{ session.get('user') }}</h1>
+    <ul>
+        {% for row in user_list %}
+        <li>{{ row }}</li>
+        {% endfor %}
+    </ul>
+</table>
+{% endblock %}

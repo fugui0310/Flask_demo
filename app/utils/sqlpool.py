@@ -23,11 +23,44 @@ POOL = PooledDB(
 )
 
 
-def func():
-    conn = POOL.connection()
-    cursor = conn.cursor()
-    cursor.execute('select * from user')
-    result = cursor.fetchall()
-    # print(result)
-    conn.close()
-    return result
+# def SQLHelper():
+#     conn = POOL.connection()
+#     cursor = conn.cursor()
+#     cursor.execute('select * from user')
+#     result = cursor.fetchall()
+#     # print(result)
+#     conn.close()
+#     return result
+class SQLHelper(object):
+
+    def __init__(self):
+        self.conn = None
+        self.cursor = None
+
+    def open(self,cursor=pymysql.cursors.DictCursor):
+        self.conn = POOL.connection()
+        self.cursor = self.conn.cursor(cursor=cursor)
+
+    def close(self):
+        self.cursor.close()
+        self.conn.close()
+
+    def fetchone(self,sql,params):
+        cursor = self.cursor
+        cursor.execute(sql,params)
+        result = cursor.fetchone()
+
+        return result
+
+    def fetchall(self, sql, params):
+        cursor = self.cursor
+        cursor.execute(sql, params)
+        result = cursor.fetchall()
+        return result
+
+    def __enter__(self):
+        self.open()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()

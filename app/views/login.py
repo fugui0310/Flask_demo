@@ -1,10 +1,7 @@
-from flask import Flask, render_template, request,Blueprint
+from flask import render_template, request, Blueprint,current_app,redirect
 
-from app.loginform import LoginForm
-from app.sqlpool import func
-
-
-
+from app.utils.loginform import LoginForm
+from app.utils.sqlpool import SQLHelper
 
 account = Blueprint('account', __name__)
 
@@ -17,11 +14,10 @@ def login():
     else:
         form = LoginForm(formdata=request.form)
         if form.validate():
-            conn_db = func()
-            user_tuple = tuple(form.data.values())
-            for item in conn_db:
-                if item[1:3] == user_tuple:
-                    return render_template('index.html', )
-        else:
-            print(form.errors)
+            with SQLHelper() as helper:
+                result = helper.fetchone('select * from user where user=%s and password = %s',
+                                         [request.form.get('user'), request.form.get('password'), ])
+            if result:
+                current_app.auth_manager.login(result['user'])
+                return redirect('/index', )
         return render_template('login.html', form=form)
